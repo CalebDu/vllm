@@ -341,13 +341,13 @@ def _moe_permute(a, a_s, topk_ids, num_groups, topk, block_m):
 
     num_tokens = topk * M
 
-    sorted_token_ids = sorted_token_ids.clamp(max=num_tokens - 1)
+    sorted_token_ids_clamp = sorted_token_ids.clamp(max=num_tokens - 1)
     m_indices = torch.repeat_interleave(m_indices, block_m, dim=0)
     inv_perm = torch.argsort(sorted_token_ids)[:M * topk]
 
-    a = fp8_perm(a, sorted_token_ids // topk)
+    a = fp8_perm(a, sorted_token_ids_clamp // topk)
     if a_s is not None:
-        a_s = a_s[sorted_token_ids // topk]
+        a_s = a_s[sorted_token_ids_clamp // topk]
 
     return a, a_s, m_indices, inv_perm
 
